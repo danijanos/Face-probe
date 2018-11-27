@@ -1,54 +1,87 @@
 import cv2
 import glob
 
-faceDet = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
-faceDet_two = cv2.CascadeClassifier("haarcascade_frontalface_alt2.xml")
-faceDet_three = cv2.CascadeClassifier("haarcascade_frontalface_alt.xml")
-faceDet_four = cv2.CascadeClassifier("haarcascade_frontalface_alt_tree.xml")
+# The four open cv HAAR filter face detector:
+face_detector_1 = cv2.CascadeClassifier("venv\\Lib\\site-packages\\cv2\\data\\haarcascade_frontalface_default.xml")
+face_detector_2 = cv2.CascadeClassifier("venv\\Lib\\site-packages\\cv2\\data\\haarcascade_frontalface_alt2.xml")
+face_detector_3 = cv2.CascadeClassifier("venv\\Lib\\site-packages\\cv2\\data\\haarcascade_frontalface_alt.xml")
+face_detector_4 = cv2.CascadeClassifier("venv\\Lib\\site-packages\\cv2\\data\\haarcascade_frontalface_alt_tree.xml")
+
 # Define emotions:
 emotions = ["neutral", "anger", "contempt", "disgust", "fear", "happy", "sadness", "surprise"]
 
 
-def detect_faces(emotion):
-    # Get list of all images with emotion:
-    files = glob.glob("sorted_set\\%s\\*" %emotion)
-    filenumber = 0
-    for f in files:
+def detect_faces(face_emotion):
+    # Get a list of all images with the specified emotion:
+    files = glob.glob("sorted_set\\%s\\*" % face_emotion)
+    file_number = 0
+    for file in files:
         # Open image:
-        frame = cv2.imread(f)
+        face_image = cv2.imread(file)
         # Convert image to gray scale:
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        # Detect face using 4 different classifiers
-        face = faceDet.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=10, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
-        face_two = faceDet_two.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=10, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
-        face_three = faceDet_three.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=10, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
-        face_four = faceDet_four.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=10, minSize=(5, 5), flags=cv2.CASCADE_SCALE_IMAGE)
+        grayscale_face_image = cv2.cvtColor(face_image, cv2.COLOR_BGR2GRAY)
+
+        # Detect the face using the 4 different classifiers:
+        face_1 = face_detector_1.detectMultiScale(
+            grayscale_face_image,
+            scaleFactor=1.1,
+            minNeighbors=10,
+            flags=cv2.CASCADE_SCALE_IMAGE,
+            minSize=(5, 5)
+        )
+
+        face_2 = face_detector_2.detectMultiScale(
+            grayscale_face_image,
+            scaleFactor=1.1,
+            minNeighbors=10,
+            flags=cv2.CASCADE_SCALE_IMAGE,
+            minSize=(5, 5)
+        )
+
+        face_3 = face_detector_3.detectMultiScale(
+            grayscale_face_image,
+            scaleFactor=1.1,
+            minNeighbors=10,
+            flags=cv2.CASCADE_SCALE_IMAGE,
+            minSize=(5, 5)
+        )
+
+        face_4 = face_detector_4.detectMultiScale(
+            grayscale_face_image,
+            scaleFactor=1.1,
+            minNeighbors=10,
+            flags=cv2.CASCADE_SCALE_IMAGE,
+            minSize=(5, 5)
+        )
+
         # Go over detected faces, stop at first detected face, return empty if no face:
-        if len(face) == 1:
-            facefeatures = face
-        elif len(face_two) == 1:
-            facefeatures = face_two
-        elif len(face_three) == 1:
-            facefeatures = face_three
-        elif len(face_four) == 1:
-            facefeatures = face_four
+        if len(face_1) == 1:
+            face_features = face_1
+        elif len(face_2) == 1:
+            face_features = face_2
+        elif len(face_3) == 1:
+            face_features = face_3
+        elif len(face_4) == 1:
+            face_features = face_4
         else:
-            facefeatures = ""
-        # Cut and save face:
-        for (x, y, w, h) in facefeatures: # get coordinates and size of rectangle containing face
-            print("face found in file: %s") % f
-            # Cut the frame to size:
-            gray = gray[y:y+h, x:x+w]
+            face_features = ""
+
+        # Cut and save the face:
+        # get the coordinates and size of the rectangle which containing the face
+        for (x, y, w, h) in face_features:
+            print("face found in file: %s" % file)
+            # Cut the image frame to size:
+            grayscale_face_image = grayscale_face_image[y:y + h, x:x + w]
             try:
-                # Resize face so all images have same size:
-                out = cv2.resize(gray, (350, 350))
-                # Write image:
-                cv2.imwrite("dataset\\%s\\%s.jpg" %(emotion, filenumber), out)
+                # Resize all images to have the same size:
+                cropped_and_resized_image = cv2.resize(grayscale_face_image, (350, 350))
+                # Write out:
+                cv2.imwrite("dataset\\%s\\%s.jpg" % (face_emotion, file_number), cropped_and_resized_image)
             except:
-                # If error, pass file
+                # If error, pass the file
                 pass
         # Increment image number:
-        filenumber += 1
+        file_number += 1
 
 
 for emotion in emotions:
