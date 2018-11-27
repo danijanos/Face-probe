@@ -1,30 +1,28 @@
 import glob
 from shutil import copyfile
 
-# Define emotion order
+# Define emotion order from CK+ readme
 emotions = ["neutral", "anger", "contempt", "disgust", "fear", "happy", "sadness", "surprise"]
 # Returns a list of all folders with participant numbers
 participants = glob.glob("source_emotion\\*")
 
-
-for x in participants:
-    # store current participant number
-    part = "%s" % x[-4:]
+for participant in participants:
+    participant_number = "%s" % participant[-4:]  # (eg. S005)
     # Store list of sessions for current participant
-    for sessions in glob.glob("%s\\*" % x):
+    for sessions in glob.glob("%s\\*" % participant):
         for files in glob.glob("%s\\*" % sessions):
             current_session = files[20:-30]
             file = open(files, 'r')
             # emotions are encoded as a float, read line as float, then convert to integer.
             emotion = int(float(file.readline()))
             # get path for last image in sequence, which contains the emotion
-            sourcefile_emotion = glob.glob("source_images\\%s\\%s\\*" % (part, current_session))[-1]
+            sourcefile_emotion = glob.glob("source_images\\%s\\%s\\*" % (participant_number, current_session))[-1]
             # do same for neutral image
-            sourcefile_neutral = glob.glob("source_images\\%s\\%s\\*" % (part, current_session))[0]
+            sourcefile_neutral = glob.glob("source_images\\%s\\%s\\*" % (participant_number, current_session))[0]
             # Generate path to put neutral image
-            dest_neut = "sorted_set\\neutral\\%s" % sourcefile_neutral[25:]
+            destination_neutral = "sorted_set\\neutral\\%s" % sourcefile_neutral[25:]
             # Do same for emotion containing image
-            dest_emot = "sorted_set\\%s\\%s" % (emotions[emotion], sourcefile_emotion[25:])
+            destination_emotion = "sorted_set\\%s\\%s" % (emotions[emotion], sourcefile_emotion[25:])
             # Copy files
-            copyfile(sourcefile_neutral, dest_neut)
-            copyfile(sourcefile_emotion, dest_emot)
+            copyfile(sourcefile_neutral, destination_neutral)
+            copyfile(sourcefile_emotion, destination_emotion)
