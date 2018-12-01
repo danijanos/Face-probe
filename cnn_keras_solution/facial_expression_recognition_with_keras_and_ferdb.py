@@ -38,6 +38,7 @@ model = tf.keras.models.Sequential()
 
 # The first convolution layer:
 model.add(tf.keras.layers.Conv2D(64, (5, 5), activation=tf.nn.relu, input_shape=(image_dimension, image_dimension, 1)))
+# model shape = 48×48×64 = 147456
 model.add(tf.keras.layers.MaxPooling2D(pool_size=(5, 5), strides=(2, 2)))
 
 # The second convolution layer:
@@ -50,5 +51,11 @@ model.add(tf.keras.layers.Conv2D(128, (3, 3), activation=tf.nn.relu))
 model.add(tf.keras.layers.Conv2D(128, (3, 3), activation=tf.nn.relu))
 model.add(tf.keras.layers.AveragePooling2D(pool_size=(3, 3), strides=(2, 2)))
 
-# Add a flattening layer, batch size remains the same
+# Add a flattening layer (batch size remains the same):
 model.add(tf.keras.layers.Flatten())
+
+# Fully connected layer:
+model.add(tf.keras.layers.Dense(1024, activation=tf.nn.relu))
+model.add(tf.keras.layers.Dropout(0.2))
+model.add(tf.keras.layers.Dense(1024, activation=tf.nn.relu))
+model.add(tf.keras.layers.Dropout(0.2))
