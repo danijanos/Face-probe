@@ -39,3 +39,8 @@ model = tf.keras.models.Sequential()
 # The first convolution layer:
 model.add(tf.keras.layers.Conv2D(64, (5, 5), activation=tf.nn.relu, input_shape=(image_dimension, image_dimension, 1)))
 model.add(tf.keras.layers.MaxPooling2D(pool_size=(5, 5), strides=(2, 2)))
+
+# The second convolution layer:
+model.add(tf.keras.layers.Conv2D(64, (3, 3), activation=tf.nn.relu))
+model.add(tf.keras.layers.Conv2D(64, (3, 3), activation=tf.nn.relu))
+model.add(tf.keras.layers.AveragePooling2D(pool_size=(3, 3), strides=(2, 2)))
