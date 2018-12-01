@@ -28,3 +28,5 @@ for i in range(1, data_instances):
             test_y.append(emotion)
     except:
         print('', end='')
+
+model = tf.keras.models.Sequential()
