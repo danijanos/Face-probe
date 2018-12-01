@@ -65,5 +65,11 @@ model.add(tf.keras.layers.Dropout(0.2))
 # Classification layer:
 model.add(tf.keras.layers.Dense(number_of_emotion_classes, activation=tf.nn.softmax))
 
+# using a generator to randomly select train set instances
 generator = ImageDataGenerator()
 train_generator = generator.flow(train_x, train_y, batch_size=training_batch_size)
+
+model.compile(
+    loss=tf.keras.losses.categorical_crossentropy,
+    optimizer=tf.keras.optimizers.Adam(),
+    metrics=['accuracy'])
