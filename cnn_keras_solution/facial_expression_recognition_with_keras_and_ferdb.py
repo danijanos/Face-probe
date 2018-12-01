@@ -1,8 +1,10 @@
 import numpy as np
 import tensorflow as tf
+from keras_preprocessing.image import ImageDataGenerator
 
 number_of_emotion_classes = 7
 image_dimension = 48
+training_batch_size = 256
 
 with open('./data/fer2013.csv') as fer:
     expression_data = fer.readlines()
@@ -62,3 +64,6 @@ model.add(tf.keras.layers.Dropout(0.2))
 
 # Classification layer:
 model.add(tf.keras.layers.Dense(number_of_emotion_classes, activation=tf.nn.softmax))
+
+generator = ImageDataGenerator()
+train_generator = generator.flow(train_x, train_y, batch_size=training_batch_size)
