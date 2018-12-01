@@ -44,3 +44,8 @@ model.add(tf.keras.layers.MaxPooling2D(pool_size=(5, 5), strides=(2, 2)))
 model.add(tf.keras.layers.Conv2D(64, (3, 3), activation=tf.nn.relu))
 model.add(tf.keras.layers.Conv2D(64, (3, 3), activation=tf.nn.relu))
 model.add(tf.keras.layers.AveragePooling2D(pool_size=(3, 3), strides=(2, 2)))
+
+# The third convolution layer:
+model.add(tf.keras.layers.Conv2D(128, (3, 3), activation=tf.nn.relu))
+model.add(tf.keras.layers.Conv2D(128, (3, 3), activation=tf.nn.relu))
+model.add(tf.keras.layers.AveragePooling2D(pool_size=(3, 3), strides=(2, 2)))
