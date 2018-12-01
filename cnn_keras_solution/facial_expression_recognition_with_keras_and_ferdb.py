@@ -5,6 +5,7 @@ from keras_preprocessing.image import ImageDataGenerator
 number_of_emotion_classes = 7
 image_dimension = 48
 training_batch_size = 256
+learning_epochs = 5
 
 with open('./data/fer2013.csv') as fer:
     expression_data = fer.readlines()
@@ -33,6 +34,15 @@ for i in range(1, data_instances):
             test_y.append(emotion)
     except:
         print('', end='')
+
+# --- train data transformation:
+train_x = np.array(train_x, 'float32')
+train_y = np.array(train_y, 'float32')
+
+train_x /= 255  # normalize between [0, 1]
+train_x = train_x.reshape(train_x.shape[0], 48, 48, 1)
+train_x = train_x.astype('float32')
+# ---
 
 model = tf.keras.models.Sequential()
 
@@ -73,3 +83,8 @@ model.compile(
     loss=tf.keras.losses.categorical_crossentropy,
     optimizer=tf.keras.optimizers.Adam(),
     metrics=['accuracy'])
+
+model.fit_generator(
+    train_generator,
+    steps_per_epoch=training_batch_size,
+    epochs=learning_epochs)
