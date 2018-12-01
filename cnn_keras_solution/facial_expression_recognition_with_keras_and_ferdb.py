@@ -59,3 +59,6 @@ model.add(tf.keras.layers.Dense(1024, activation=tf.nn.relu))
 model.add(tf.keras.layers.Dropout(0.2))
 model.add(tf.keras.layers.Dense(1024, activation=tf.nn.relu))
 model.add(tf.keras.layers.Dropout(0.2))
+
+# Classification layer:
+model.add(tf.keras.layers.Dense(number_of_emotion_classes, activation=tf.nn.softmax))
