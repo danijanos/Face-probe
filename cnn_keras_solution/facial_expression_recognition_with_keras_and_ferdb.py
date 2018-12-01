@@ -49,3 +49,6 @@ model.add(tf.keras.layers.AveragePooling2D(pool_size=(3, 3), strides=(2, 2)))
 model.add(tf.keras.layers.Conv2D(128, (3, 3), activation=tf.nn.relu))
 model.add(tf.keras.layers.Conv2D(128, (3, 3), activation=tf.nn.relu))
 model.add(tf.keras.layers.AveragePooling2D(pool_size=(3, 3), strides=(2, 2)))
+
+# Add a flattening layer, batch size remains the same
+model.add(tf.keras.layers.Flatten())
