@@ -141,3 +141,16 @@ def bar_chart(emotions):
     plot.bar(y_value, emotions, align='center')
     plot.xticks(y_value, emotion_types)
     plot.show()
+
+
+test_image = tf.keras.preprocessing.image.load_img(
+    './data/test_images/pablo.png',
+    target_size=(image_dimension, image_dimension),
+    color_mode='grayscale')
+
+x = tf.keras.preprocessing.image.img_to_array(test_image)
+x = np.expand_dims(x, axis=0)
+x /= 255
+
+custom = model.predict(x)
+bar_chart(custom[0])
