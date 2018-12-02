@@ -25,7 +25,7 @@ for i in range(1, data_instances):
         pixels = np.array(value, 'float32')
 
         # one-hot encoding of the data
-        # Converts a class vector (integers) to binary class matrix for use with categorical_crossentropy
+        # Converts a class vector (integers) to binary class matrix for use with categorical cross entropy
         emotion = tf.keras.utils.to_categorical(emotion, num_classes=number_of_emotion_classes)
 
         if 'Training' in usage:
@@ -34,7 +34,7 @@ for i in range(1, data_instances):
         elif 'PublicTest' in usage:
             test_x.append(pixels)
             test_y.append(emotion)
-    except:
+    except ValueError:
         print('', end='')
 
 # --- train data transformation (SciPy is required):
