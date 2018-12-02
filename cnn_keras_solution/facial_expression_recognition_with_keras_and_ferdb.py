@@ -86,9 +86,12 @@ model.add(tf.keras.layers.Dropout(0.2))
 # Classification layer:
 model.add(tf.keras.layers.Dense(number_of_emotion_classes, activation=tf.nn.softmax))
 
-# using a generator to randomly select train set instances
 generator = ImageDataGenerator(vertical_flip=True)
-train_generator = generator.flow(train_x, train_y, batch_size=training_batch_size)
+
+# randomly select train set instances
+train_data = generator.flow(train_x, train_y, batch_size=training_batch_size)
+
+test_data = generator.flow(test_x, test_y, batch_size=training_batch_size)
 
 model.compile(
     loss=tf.keras.losses.categorical_crossentropy,
@@ -98,13 +101,22 @@ model.compile(
 training_mode = False
 
 if training_mode:
+
     # train for all train set:
     # model.fit_generator(train_x, train_y, epochs=learning_epochs)
 
+    # Train with test validation:
+    # model.fit_generator(
+    #     train_data,
+    #     validation_data=test_data,
+    #     steps_per_epoch=training_batch_size,
+    #     epochs=learning_epochs)
+
     # train for randomly selected train sets:
     model.fit_generator(
-        train_generator,
+        train_data,
         steps_per_epoch=training_batch_size,
         epochs=learning_epochs)
+
 else:
     print('eval mode')
