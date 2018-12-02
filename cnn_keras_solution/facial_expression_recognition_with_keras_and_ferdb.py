@@ -7,6 +7,8 @@ image_dimension = 48
 training_batch_size = 256
 learning_epochs = 5
 
+
+# Data preparing and transforming:
 with open('./data/fer2013.csv') as fer:
     expression_data = fer.readlines()
 
@@ -35,7 +37,7 @@ for i in range(1, data_instances):
     except:
         print('', end='')
 
-# --- train data transformation:
+# --- train data transformation (SciPy is required):
 train_x = np.array(train_x, 'float32')
 train_y = np.array(train_y, 'float32')
 
@@ -76,7 +78,7 @@ model.add(tf.keras.layers.Dropout(0.2))
 model.add(tf.keras.layers.Dense(number_of_emotion_classes, activation=tf.nn.softmax))
 
 # using a generator to randomly select train set instances
-generator = ImageDataGenerator()
+generator = ImageDataGenerator(vertical_flip=True)
 train_generator = generator.flow(train_x, train_y, batch_size=training_batch_size)
 
 model.compile(
@@ -84,7 +86,12 @@ model.compile(
     optimizer=tf.keras.optimizers.Adam(),
     metrics=['accuracy'])
 
-model.fit_generator(
-    train_generator,
-    steps_per_epoch=training_batch_size,
-    epochs=learning_epochs)
+training_mode = False
+
+if training_mode:
+    model.fit_generator(
+        train_generator,
+        steps_per_epoch=training_batch_size,
+        epochs=learning_epochs)
+else:
+    print('eval mode')
