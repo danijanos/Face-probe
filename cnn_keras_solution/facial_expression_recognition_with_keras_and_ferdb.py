@@ -46,6 +46,15 @@ train_x = train_x.reshape(train_x.shape[0], 48, 48, 1)
 train_x = train_x.astype('float32')
 # ---
 
+# --- test data transformation:
+test_x = np.array(test_x, 'float32')
+test_y = np.array(test_y, 'float32')
+
+test_x /= 255
+test_x = test_x.reshape(test_x.shape[0], 48, 48, 1)
+test_x = test_x.astype('float32')
+# ---
+
 model = tf.keras.models.Sequential()
 
 # The CNN structure:
@@ -89,6 +98,10 @@ model.compile(
 training_mode = False
 
 if training_mode:
+    # train for all train set:
+    # model.fit_generator(train_x, train_y, epochs=learning_epochs)
+
+    # train for randomly selected train sets:
     model.fit_generator(
         train_generator,
         steps_per_epoch=training_batch_size,
