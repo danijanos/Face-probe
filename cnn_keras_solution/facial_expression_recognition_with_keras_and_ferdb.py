@@ -118,5 +118,10 @@ if training_mode:
         steps_per_epoch=training_batch_size,
         epochs=learning_epochs)
 
+    # The evaluation of the network:
+    test_scores = model.evaluate(test_x, test_y)
+    print('Test loss:', test_scores[0])
+    print('Test accuracy:', test_scores[1] * 100)
+
 else:
-    print('eval mode')
+    model.load_weights('./models/fe_modelweights.h5')
