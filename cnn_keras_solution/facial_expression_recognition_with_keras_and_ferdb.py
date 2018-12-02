@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plot
 from keras_preprocessing.image import ImageDataGenerator
 
 number_of_emotion_classes = 7
@@ -55,6 +56,8 @@ test_x = test_x.reshape(test_x.shape[0], 48, 48, 1)
 test_x = test_x.astype('float32')
 # ---
 
+# The implementation of the network:
+
 model = tf.keras.models.Sequential()
 
 # The CNN structure:
@@ -85,6 +88,8 @@ model.add(tf.keras.layers.Dropout(0.2))
 
 # Classification layer:
 model.add(tf.keras.layers.Dense(number_of_emotion_classes, activation=tf.nn.softmax))
+
+# Training section:
 
 generator = ImageDataGenerator(vertical_flip=True)
 
@@ -125,3 +130,14 @@ if training_mode:
 
 else:
     model.load_weights('./models/fe_modelweights.h5')
+
+
+# bar chart for emotion predictions
+def bar_chart(emotions):
+    plot.title('Emotion')
+    plot.ylabel('Percentage')
+    emotion_types = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
+    y_value = np.arange(len(emotion_types))
+    plot.bar(y_value, emotions, align='center')
+    plot.xticks(y_value, emotion_types)
+    plot.show()
