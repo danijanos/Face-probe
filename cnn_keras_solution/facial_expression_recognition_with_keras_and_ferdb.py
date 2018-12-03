@@ -3,6 +3,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plot
 from keras_preprocessing.image import ImageDataGenerator
 from tensorflow.python.keras.callbacks import TensorBoard
+from time import time
 
 number_of_emotion_classes = 7
 image_dimension = 48
@@ -99,6 +100,8 @@ generator = ImageDataGenerator(vertical_flip=True)
 train_data = generator.flow(train_x, train_y, batch_size=training_batch_size)
 
 test_data = generator.flow(test_x, test_y, batch_size=training_batch_size)
+
+tensor_board = TensorBoard(log_dir="logs/{}".format(time()))
 
 model.compile(
     loss=tf.keras.losses.categorical_crossentropy,
