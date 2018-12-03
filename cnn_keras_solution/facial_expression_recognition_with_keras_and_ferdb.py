@@ -124,7 +124,8 @@ if is_in_training_mode:
     model.fit_generator(
         train_data,
         steps_per_epoch=training_batch_size,
-        epochs=learning_epochs)
+        epochs=learning_epochs,
+        callbacks=[tensor_board])
 
     # The evaluation of the network:
     test_scores = model.evaluate(test_x, test_y)
