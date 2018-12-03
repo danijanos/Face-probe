@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plot
 from keras_preprocessing.image import ImageDataGenerator
+from tensorflow.python.keras.callbacks import TensorBoard
 
 number_of_emotion_classes = 7
 image_dimension = 48
