@@ -8,6 +8,7 @@ image_dimension = 48
 training_batch_size = 256
 learning_epochs = 5
 
+is_in_training_mode = False
 
 # Data preparing and transforming:
 with open('./data/fer2013.csv') as fer:
@@ -103,9 +104,7 @@ model.compile(
     optimizer=tf.keras.optimizers.Adam(),
     metrics=['accuracy'])
 
-training_mode = False
-
-if training_mode:
+if is_in_training_mode:
 
     # train for all train set:
     # model.fit_generator(train_x, train_y, epochs=learning_epochs)
@@ -131,26 +130,36 @@ if training_mode:
 else:
     model.load_weights('./models/fe_modelweights.h5')
 
-
-# bar chart for emotion predictions
-def bar_chart(emotions):
-    plot.title('Emotion')
-    plot.ylabel('Percentage')
-    emotion_types = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
-    y_value = np.arange(len(emotion_types))
-    plot.bar(y_value, emotions, align='center')
-    plot.xticks(y_value, emotion_types)
-    plot.show()
-
-
+# Requires Image included PIL
+# TODO: Refactor this into a module
 test_image = tf.keras.preprocessing.image.load_img(
-    './data/test_images/pablo.png',
+    './data/test_images/dj_1_cropped.jpg',
     target_size=(image_dimension, image_dimension),
     color_mode='grayscale')
 
-x = tf.keras.preprocessing.image.img_to_array(test_image)
-x = np.expand_dims(x, axis=0)
-x /= 255
+# Prepare the data from the test image for prediction:
+values_from_testimage = tf.keras.preprocessing.image.img_to_array(test_image)
+values_from_testimage = np.expand_dims(values_from_testimage, axis=0)
+values_from_testimage /= 255
 
-custom = model.predict(x)
-bar_chart(custom[0])
+prediction_from_image = model.predict(values_from_testimage)
+
+# Drawing a bar chart which represents the confidential values of the classification
+emotion_types = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
+x_axis_value = np.arange(len(emotion_types))
+
+plot.subplot(1, 2, 2)  # one row, two column, second (right side) subplot
+plot.title('Emotion')
+plot.ylabel('Percentage')
+plot.bar(x_axis_value, prediction_from_image[0], align='center')
+plot.xticks(x_axis_value, emotion_types)
+
+# Prepare the data for showing the test image in the left subplot:
+values_from_testimage = np.array(values_from_testimage, 'float32')
+values_from_testimage = values_from_testimage.reshape([image_dimension, image_dimension])
+
+plot.subplot(1, 2, 1)  # one row, two column, first (left side) subplot for showing the test image
+plot.gray()
+plot.imshow(values_from_testimage)
+
+plot.show()
