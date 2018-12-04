@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 from keras.models import model_from_json
 from keras_preprocessing import image
 
@@ -32,7 +33,9 @@ while True:
         detected_face = cv2.cvtColor(detected_face, cv2.COLOR_BGR2GRAY)  # transform to gray scale
         detected_face = cv2.resize(detected_face, (48, 48))  # resize to 48x48
 
-        face_to_pixels = image.img_to_array(detected_face)
+        pixels_from_face = image.img_to_array(detected_face)
+        pixels_from_face = np.expand_dims(pixels_from_face, axis=0)
+        pixels_from_face /= 255  # normalize all pixels to [0,1]
 
     cv2.imshow('Stream from the camera', frame)
 
