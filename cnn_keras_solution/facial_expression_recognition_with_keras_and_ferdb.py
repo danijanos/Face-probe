@@ -11,6 +11,7 @@ training_batch_size = 256
 learning_epochs = 5
 
 is_in_training_mode = False
+test_data_path = './data/test_images/dj_1_cropped.jpg'
 
 # Data preparing and transforming:
 with open('./data/fer2013.csv') as fer:
@@ -99,7 +100,7 @@ generator = ImageDataGenerator(vertical_flip=True)
 # randomly select train set instances
 train_data = generator.flow(train_x, train_y, batch_size=training_batch_size)
 
-test_data = generator.flow(test_x, test_y, batch_size=training_batch_size)
+test_data_path = generator.flow(test_x, test_y, batch_size=training_batch_size)
 
 tensor_board = TensorBoard(log_dir="logs/{}".format(time()))
 
@@ -137,8 +138,9 @@ else:
 
 # Requires Image included PIL
 # TODO: Refactor this into a module
+
 test_image = tf.keras.preprocessing.image.load_img(
-    './data/test_images/dj_1_cropped.jpg',
+    test_data_path,
     target_size=(image_dimension, image_dimension),
     color_mode='grayscale')
 
