@@ -1,5 +1,6 @@
 import cv2
 
+emotions = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
 face_detector = cv2.CascadeClassifier('../venv/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
 
 capture_stream = cv2.VideoCapture(0)
