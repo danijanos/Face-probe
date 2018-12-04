@@ -39,6 +39,10 @@ while True:
 
         prediction = FER_model.predict(pixels_from_face)  # store the prediction of emotions
 
+        # 0: angry, 1:disgust, 2:fear, 3:happy, 4:sad, 5:surprise, 6:neutral
+        the_most_likely_emotion_index = np.argmax(prediction[0])
+        emotion = emotions[the_most_likely_emotion_index]
+
     cv2.imshow('Stream from the camera', frame)
 
     # press q to quit
