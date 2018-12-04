@@ -37,6 +37,8 @@ while True:
         pixels_from_face = np.expand_dims(pixels_from_face, axis=0)
         pixels_from_face /= 255  # normalize all pixels to [0,1]
 
+        prediction = FER_model.predict(pixels_from_face)  # store the prediction of emotions
+
     cv2.imshow('Stream from the camera', frame)
 
     # press q to quit
