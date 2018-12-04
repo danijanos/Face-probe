@@ -46,7 +46,7 @@ train_x = np.array(train_x, 'float32')
 train_y = np.array(train_y, 'float32')
 
 train_x /= 255  # normalize between [0, 1]
-train_x = train_x.reshape(train_x.shape[0], 48, 48, 1)
+train_x = train_x.reshape(train_x.shape[0], image_dimension, image_dimension, 1)
 train_x = train_x.astype('float32')
 # ---
 
@@ -55,7 +55,7 @@ test_x = np.array(test_x, 'float32')
 test_y = np.array(test_y, 'float32')
 
 test_x /= 255
-test_x = test_x.reshape(test_x.shape[0], 48, 48, 1)
+test_x = test_x.reshape(test_x.shape[0], image_dimension, image_dimension, 1)
 test_x = test_x.astype('float32')
 # ---
 
