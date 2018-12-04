@@ -43,6 +43,8 @@ while True:
         the_most_likely_emotion_index = np.argmax(prediction[0])
         emotion = emotions[the_most_likely_emotion_index]
 
+        cv2.putText(frame, emotion, (x, y), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
+
     cv2.imshow('Stream from the camera', frame)
 
     # press q to quit
