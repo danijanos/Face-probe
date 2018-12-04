@@ -1,4 +1,9 @@
 import cv2
+from keras.models import model_from_json
+
+model_in_json = open('./models/facial_expression_model_structure.json', 'r').read()
+FER_model = model_from_json(model_in_json)
+FER_model.load_weights('./models/facial_expression_model_weights.h5')
 
 emotions = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
 face_detector = cv2.CascadeClassifier('../venv/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml')
