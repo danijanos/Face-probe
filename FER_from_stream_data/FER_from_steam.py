@@ -1,5 +1,6 @@
 import cv2
 from keras.models import model_from_json
+from keras_preprocessing import image
 
 model_in_json = open('./models/facial_expression_model_structure.json', 'r').read()
 FER_model = model_from_json(model_in_json)
@@ -26,11 +27,14 @@ while True:
 
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)  # Rectangle around the face
-        cv2.imshow('Stream from the camera', frame)
 
         detected_face = frame[y:y + h, x:x + w]  # crop detected face
         detected_face = cv2.cvtColor(detected_face, cv2.COLOR_BGR2GRAY)  # transform to gray scale
         detected_face = cv2.resize(detected_face, (48, 48))  # resize to 48x48
+
+        face_to_pixels = image.img_to_array(detected_face)
+
+    cv2.imshow('Stream from the camera', frame)
 
     # press q to quit
     if cv2.waitKey(1) & 0xFF == ord('q'):
