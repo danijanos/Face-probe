@@ -104,8 +104,12 @@ model.compile(
     optimizer=tf.keras.optimizers.Adam(),
     metrics=['accuracy'])
 
-# train for all train set:
-# model.fit_generator(train_x, train_y, epochs=learning_epochs)
+# Train for all train set:
+# model.fit_generator(
+#     train_x,
+#     train_y,
+#     epochs=learning_epochs,
+#     callbacks=[tensor_board])
 
 # Train with test validation:
 model.fit_generator(
@@ -115,12 +119,15 @@ model.fit_generator(
     epochs=learning_epochs,
     callbacks=[tensor_board])
 
-# train for randomly selected train sets:
+# Train for randomly selected train sets:
 # model.fit_generator(
 #     train_data,
 #     steps_per_epoch=training_batch_size,
 #     epochs=learning_epochs,
 #     callbacks=[tensor_board])
+
+# Saving the model:
+model.save('./saved_models/FER_model_weights.hdf5')
 
 # The evaluation of the network:
 test_scores = model.evaluate(test_x, test_y)
