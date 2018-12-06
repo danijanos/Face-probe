@@ -1,66 +1,60 @@
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plot
 from keras_preprocessing.image import ImageDataGenerator
 from tensorflow.python.keras.callbacks import TensorBoard
 from time import time
 
-is_in_training_mode = True
-
 number_of_emotion_classes = 7
 image_dimension = 48
 training_batch_size = 256
-learning_epochs = 5
+learning_epochs = 1
 
-test_data_path = './data/test_images/dj_1_cropped.jpg'
+# Data preparing and transforming:
+with open('./data/fer2013.csv') as fer:
+    expression_data = fer.readlines()
 
-if is_in_training_mode:
-    # Data preparing and transforming:
-    with open('./data/fer2013.csv') as fer:
-        expression_data = fer.readlines()
+data_lines = np.array(expression_data)
+data_instances = data_lines.size
 
-    data_lines = np.array(expression_data)
-    data_instances = data_lines.size
+train_x, train_y, test_x, test_y = [], [], [], []
 
-    train_x, train_y, test_x, test_y = [], [], [], []
+for i in range(1, data_instances):
+    try:
 
-    for i in range(1, data_instances):
-        try:
+        emotion, image, usage = data_lines[i].split(',')
+        value = image.split(' ')
+        pixels = np.array(value, 'float32')
 
-            emotion, image, usage = data_lines[i].split(',')
-            value = image.split(' ')
-            pixels = np.array(value, 'float32')
+        # one-hot encoding of the data
+        # Converts a class vector (integers) to binary class matrix for use with categorical cross entropy
+        emotion = tf.keras.utils.to_categorical(emotion, num_classes=number_of_emotion_classes)
 
-            # one-hot encoding of the data
-            # Converts a class vector (integers) to binary class matrix for use with categorical cross entropy
-            emotion = tf.keras.utils.to_categorical(emotion, num_classes=number_of_emotion_classes)
+        if 'Training' in usage:
+            train_x.append(pixels)
+            train_y.append(emotion)
+        elif 'PublicTest' in usage:
+            test_x.append(pixels)
+            test_y.append(emotion)
+    except ValueError:
+        print('', end='')
 
-            if 'Training' in usage:
-                train_x.append(pixels)
-                train_y.append(emotion)
-            elif 'PublicTest' in usage:
-                test_x.append(pixels)
-                test_y.append(emotion)
-        except ValueError:
-            print('', end='')
+# --- train data transformation (SciPy is required):
+train_x = np.array(train_x, 'float32')
+train_y = np.array(train_y, 'float32')
 
-    # --- train data transformation (SciPy is required):
-    train_x = np.array(train_x, 'float32')
-    train_y = np.array(train_y, 'float32')
+train_x /= 255  # normalize between [0, 1]
+train_x = train_x.reshape(train_x.shape[0], image_dimension, image_dimension, 1)
+train_x = train_x.astype('float32')
+# ---
 
-    train_x /= 255  # normalize between [0, 1]
-    train_x = train_x.reshape(train_x.shape[0], image_dimension, image_dimension, 1)
-    train_x = train_x.astype('float32')
-    # ---
+# --- test data transformation:
+test_x = np.array(test_x, 'float32')
+test_y = np.array(test_y, 'float32')
 
-    # --- test data transformation:
-    test_x = np.array(test_x, 'float32')
-    test_y = np.array(test_y, 'float32')
-
-    test_x /= 255
-    test_x = test_x.reshape(test_x.shape[0], image_dimension, image_dimension, 1)
-    test_x = test_x.astype('float32')
-    # ---
+test_x /= 255
+test_x = test_x.reshape(test_x.shape[0], image_dimension, image_dimension, 1)
+test_x = test_x.astype('float32')
+# ---
 
 # The implementation of the network:
 
@@ -95,78 +89,40 @@ model.add(tf.keras.layers.Dropout(0.2))
 # Classification layer:
 model.add(tf.keras.layers.Dense(number_of_emotion_classes, activation=tf.nn.softmax))
 
-if is_in_training_mode:
+# Training section:
 
-    # Training section:
-    generator = ImageDataGenerator(vertical_flip=True)
-    # randomly select train set instances
-    train_data = generator.flow(train_x, train_y, batch_size=training_batch_size)
-    test_data = generator.flow(test_x, test_y, batch_size=training_batch_size)
-    tensor_board = TensorBoard(log_dir="logs/{}".format(time()))
+generator = ImageDataGenerator(vertical_flip=True)
+# randomly select train set instances
+train_data = generator.flow(train_x, train_y, batch_size=training_batch_size)
+test_data = generator.flow(test_x, test_y, batch_size=training_batch_size)
+
+# create tb logs:
+tensor_board = TensorBoard(log_dir="logs/{}".format(time()))
 
 model.compile(
     loss=tf.keras.losses.categorical_crossentropy,
     optimizer=tf.keras.optimizers.Adam(),
     metrics=['accuracy'])
 
-if is_in_training_mode:
+# train for all train set:
+# model.fit_generator(train_x, train_y, epochs=learning_epochs)
 
-    # train for all train set:
-    # model.fit_generator(train_x, train_y, epochs=learning_epochs)
+# Train with test validation:
+model.fit_generator(
+    train_data,
+    validation_data=test_data,
+    steps_per_epoch=training_batch_size,
+    epochs=learning_epochs,
+    callbacks=[tensor_board])
 
-    # Train with test validation:
-    # model.fit_generator(
-    #     train_data,
-    #     validation_data=test_data,
-    #     steps_per_epoch=training_batch_size,
-    #     epochs=learning_epochs)
+# train for randomly selected train sets:
+# model.fit_generator(
+#     train_data,
+#     steps_per_epoch=training_batch_size,
+#     epochs=learning_epochs,
+#     callbacks=[tensor_board])
 
-    # train for randomly selected train sets:
-    model.fit_generator(
-        train_data,
-        steps_per_epoch=training_batch_size,
-        epochs=learning_epochs,
-        callbacks=[tensor_board])
-
-    # The evaluation of the network:
-    test_scores = model.evaluate(test_x, test_y)
-    print('Test loss:', test_scores[0])
-    print('Test accuracy:', test_scores[1] * 100)
-
-else:
-    model.load_weights('./models/fe_modelweights.h5')
-
-    # Requires Image included PIL
-    # TODO: Refactor this into a module
-
-    test_image = tf.keras.preprocessing.image.load_img(
-        test_data_path,
-        target_size=(image_dimension, image_dimension),
-        color_mode='grayscale')
-
-    # Prepare the data from the test image for prediction:
-    values_from_testimage = tf.keras.preprocessing.image.img_to_array(test_image)
-    values_from_testimage = np.expand_dims(values_from_testimage, axis=0)
-    values_from_testimage /= 255
-
-    prediction_from_image = model.predict(values_from_testimage)
-
-    # Drawing a bar chart which represents the confidential values of the classification
-    emotion_types = ('angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral')
-    x_axis_value = np.arange(len(emotion_types))
-
-    plot.subplot(1, 2, 2)  # one row, two column, second (right side) subplot
-    plot.title('Emotion')
-    plot.ylabel('Percentage')
-    plot.bar(x_axis_value, prediction_from_image[0], align='center')
-    plot.xticks(x_axis_value, emotion_types)
-
-    # Prepare the data for showing the test image in the left subplot:
-    values_from_testimage = np.array(values_from_testimage, 'float32')
-    values_from_testimage = values_from_testimage.reshape([image_dimension, image_dimension])
-
-    plot.subplot(1, 2, 1)  # one row, two column, first (left side) subplot for showing the test image
-    plot.gray()
-    plot.imshow(values_from_testimage)
-
-    plot.show()
+# The evaluation of the network:
+test_scores = model.evaluate(test_x, test_y)
+print('Test loss:', test_scores[0])
+print('Test accuracy:', test_scores[1] * 100)
