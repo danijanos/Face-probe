@@ -7,7 +7,7 @@ from time import time
 number_of_emotion_classes = 7
 image_dimension = 48
 training_batch_size = 256
-learning_epochs = 1
+learning_epochs = 35
 
 # Data preparing and transforming:
 with open('./data/fer2013.csv') as fer:
@@ -97,6 +97,7 @@ train_data = generator.flow(train_x, train_y, batch_size=training_batch_size)
 test_data = generator.flow(test_x, test_y, batch_size=training_batch_size)
 
 # create tb logs:
+model.summary()
 tensor_board = TensorBoard(log_dir="logs/{}".format(time()))
 
 model.compile(
